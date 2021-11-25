@@ -30,8 +30,9 @@ func Response(data *Result)*Result{
 		result.reset()
 		resultPool.Put(result)
 	}()
-	result.Data = data.Data
-	result.Msg = data.Msg
-	result.Code = data.Code
-	return result
+	return &Result{
+		Data: data.Data,
+		Msg:  data.Msg,
+		Code: data.Code,
+	}
 }
