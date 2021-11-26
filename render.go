@@ -54,7 +54,17 @@ func Response(ctx *gin.Context, code int, data interface{}) {
 		result.Msg = "Success"
 	}
 
-	result.Data = data
+	switch {
+	case httpStatus >= 400 && httpStatus < 500:
+		ctx.Abort()
+		ctx.Set("warn", err)
+		result.Data = err.Error()
+	case httpStatus >= 500:
+		ctx.Abort()
+		ctx.Set("error", err)
+	default:
+		result.Data = data
+	}
 	b, _ := json.Marshal(&result)
 	ctx.Set("ResponseBody", b)
 	ctx.JSON(httpStatus, result)
