@@ -50,10 +50,8 @@ func Response(ctx *gin.Context, code int, data interface{}) {
 		result.Data = err.Error()
 	}
 
-	if _, ok := data.(string); ok {
-		result.Msg = "校验失败"
-		result.Data = data.(string)
-	}
+	result.Msg = "请求失败"
+	result.Data = data
 
 	switch {
 	case httpStatus >= 400 && httpStatus < 500:
