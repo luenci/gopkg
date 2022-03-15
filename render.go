@@ -51,6 +51,7 @@ func Response(ctx *gin.Context, code int, data interface{}) {
 	}
 
 	result.Msg = "请求失败"
+	result.Code = code
 	result.Data = data
 
 	switch {
