@@ -30,7 +30,7 @@ var resultPool = &sync.Pool{
 // Response response method.
 func Response(ctx *gin.Context, code int, data interface{}) {
 	// 状态码: 根据code（服务码）规则生成 eg: Code:200001, httpStatus: 200
-	httpStatus := int(code / 1000)
+	httpStatus := code / 1000
 	result := resultPool.Get().(*Result)
 	defer func() {
 		result.reset()
@@ -40,8 +40,6 @@ func Response(ctx *gin.Context, code int, data interface{}) {
 	var err error
 	if _, ok := data.(error); ok {
 		err = data.(error)
-	}
-	if err != nil {
 		coder := errors.ParseCoder(err)
 		result.Code = coder.Code()
 		if coder.String() != "" {
@@ -49,21 +47,25 @@ func Response(ctx *gin.Context, code int, data interface{}) {
 		} else {
 			result.Msg = err.Error()
 		}
-	} else {
-		result.Code = code
-		result.Msg = "Success"
+		result.Data = err.Error()
+	}
+
+	if _, ok := data.(string); ok {
+		result.Msg = "校验失败"
+		result.Data = data.(string)
 	}
 
 	switch {
 	case httpStatus >= 400 && httpStatus < 500:
 		ctx.Abort()
 		ctx.Set("warn", err)
-		result.Data = err.Error()
 	case httpStatus >= 500:
 		ctx.Abort()
 		ctx.Set("error", err)
 	default:
 		result.Data = data
+		result.Code = code
+		result.Msg = "Success"
 	}
 	b, _ := json.Marshal(&result)
 	ctx.Set("ResponseBody", b)
