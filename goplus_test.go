@@ -7,7 +7,6 @@ import (
 )
 
 func TestGo(t *testing.T) {
-
 	type args struct {
 		ctx     context.Context
 		handler func()
@@ -16,13 +15,17 @@ func TestGo(t *testing.T) {
 		name string
 		args args
 	}{
-		{"Go1", args{
-			ctx:     context.Background(),
-			handler: func() { panic("test panic") }},
+		{
+			"Go1", args{
+				ctx:     context.Background(),
+				handler: func() { panic("test panic") },
+			},
 		},
-		{"Go2", args{
-			ctx:     context.Background(),
-			handler: func() { fmt.Println("Success") }},
+		{
+			"Go2", args{
+				ctx:     context.Background(),
+				handler: func() { fmt.Println("Success") },
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -30,4 +33,5 @@ func TestGo(t *testing.T) {
 			Go(tt.args.ctx, tt.args.handler)
 		})
 	}
+	select {}
 }
